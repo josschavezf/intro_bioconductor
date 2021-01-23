@@ -1,6 +1,7 @@
 # Introduction to Bioconductor
 
 Instructor: Joselyn Chávez
+
 Date: January 28th 2021
 
 Welcome to the Meetup of R-Ladies Baltimore *Introduction to Bioconductor*.
