@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>    An introduction to the R/Bioconductor Ecosystem</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Joselyn Chávez     Twitter: @josschavezf1   josschavezf.netlify.app" />
+    <script src="libs/header-attrs-2.6/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies-fonts.css" rel="stylesheet" />
+    <script src="libs/clipboard-2.0.6/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard-0.2.4/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard-0.2.4/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: inverse center middle
+background-image: url("images/joss.png"), url("images/rladies-bmore.png")
+background-size: 140px, 140px
+background-position: 90% 90%, 5% 5%
+
+
+# &lt;br&gt; &lt;br&gt; An introduction to the R/Bioconductor Ecosystem
+
+## Joselyn Chávez &lt;br&gt; &lt;br&gt; Twitter: @josschavezf1 &lt;br&gt; josschavezf.netlify.app
+
+### January 28th, 2021
+
+
+
+
+---
+.center[
+# Materials are available at:
+
+## http://github.com/josschavezf/intro_bioconductor
+
+&lt;br&gt; 
+
+# Or you can download them by running the following code in your R session: 
+]
+
+
+```r
+if (!require("usethis")) {
+    install.packages("usethis") }
+
+usethis::use_course("josschavezf/intro_bioconductor")
+```
+
+---
+# What is Bioconductor?
+
+* A repository for the analysis of genomic data. 
+
+* At date, contains 1974 software packages.
+
+--
+# Where is located? 
+
+https://www.bioconductor.org
+
+&lt;img src = "images/bioconductor.png" style="width:450px; position:absolute; top:300px; left:380px; " /&gt;
+
+---
+# What kind of packages can we find in Bioconductor?
+
+In Bioconductor exist four types of packages:
+
+* Software
+* Annotation
+* Experiment
+* Workflow
+
+---
+# How do we access to Bioconductor?
+
+We will use the package **BiocManager**  
+
+Run the following code in your R session to install:
+
+
+```r
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+```
+
+--
+
+**BiocManager** help us to:
+
+* Install any desire package from Bioconductor, for example the package **Biostrings**:
+
+
+```r
+BiocManager::install("Biostrings")
+```
+
+--
+
+* Keep all your installed Bioconductor packages up to date. 
+
+
+```r
+BiocManager::install(version = "3.12")
+```
+
+&lt;br&gt;
+Note: Bioconductor is updated twice a year, around April and October.
+
+---
+# The Bioconductor Environment
+
+In Bioconductor, there are some kind of data, such as sequences and alignments that will be treated in a different way that we use to do with lists or data frames.
+
+Let's see some packages that will help us to deal with genomics data.
+
+* Biostrings
+* GenomicRanges
+* AnnotationHub
+* Gviz
+* SummarizedExperiment
+
+---
+# Manipulation of genomic sequences
+
+The package **Biostrings** have functions to read, write and handling genomic sequences.
+
+## Import data
+
+```r
+eco &lt;- readDNAStringSet("../data/eco.fasta")
+```
+
+
+```
+## DNAStringSet object of length 5:
+##     width seq                                                          names               
+## [1]    66 ATGAAACGCATTAGCACCACCATTACCAC...CATTACCACAGGTAACGGTGCGGGCTGA eco-b0001
+## [2]  2463 ATGCGAGTGTTGAAGTTCGGCGGTACATC...TACCCTCTCATGGAAGTTAGGAGTCTGA eco-b0002
+## [3]   933 ATGGTTAAAGTTTATGCCCCGGCTTCCAG...GGCGGGCGCACGAGTACTGGAAAACTAA eco-b0003
+## [4]  1287 ATGAAACTCTACAATCTGAAAGATCACAA...GCGTAAATTGATGATGAATCATCAGTAA eco-b0004
+## [5]   297 GTGAAAAAGATGCAATCTATCGTACTCGC...TCATGGTCCAGGCAAACATCACCGCTAA eco-b0005
+```
+
+---
+We can get some attributes of the data, as well as subset sequences of interest.
+
+
+* Get the number of sequences
+
+```r
+length(eco)
+```
+
+```
+## [1] 5
+```
+--
+* Get the number of characters on each sequence.
+
+```r
+nchar(eco)
+```
+
+```
+## [1]   66 2463  933 1287  297
+```
+--
+* Get the frequency of specific characters 
+
+```r
+letterFrequency(eco, "GC")
+```
+
+```
+##       G|C
+## [1,]   34
+## [2,] 1307
+## [3,]  525
+## [4,]  680
+## [5,]  160
+```
+
+---
+* Subset sequences 
+
+```r
+eco[1:2]
+```
+
+```
+## DNAStringSet object of length 2:
+##     width seq                                                          names               
+## [1]    66 ATGAAACGCATTAGCACCACCATTACCAC...CATTACCACAGGTAACGGTGCGGGCTGA eco-b0001
+## [2]  2463 ATGCGAGTGTTGAAGTTCGGCGGTACATC...TACCCTCTCATGGAAGTTAGGAGTCTGA eco-b0002
+```
+
+```r
+subseq(eco,start = 1, end = 10)
+```
+
+```
+## DNAStringSet object of length 5:
+##     width seq                                                          names               
+## [1]    10 ATGAAACGCA                                                   eco-b0001
+## [2]    10 ATGCGAGTGT                                                   eco-b0002
+## [3]    10 ATGGTTAAAG                                                   eco-b0003
+## [4]    10 ATGAAACTCT                                                   eco-b0004
+## [5]    10 GTGAAAAAGA                                                   eco-b0005
+```
+--
+* Translate sequences to amin acids
+
+```r
+translate(eco$`eco-b0001`)
+```
+
+```
+## 22-letter AAString object
+## seq: MKRISTTITTTITITTGNGAG*
+```
+
+---
+# We can store more information from each sequence, such as genomic position and chromosome.
+
+We need to use a **GRanges** object.
+
+
+
+---
+class: middle center
+
+# Where can we find genomic data?
+
+--
+
+# AnnotationHub
+
+&lt;img src = "images/journey.jpeg" style="width:350px;" /&gt;
+
+---
+# AnnotationHub
+
+**AnnotationHub** connect with multiple genomic data providers and give us access to their data.
+
+We use AnnotationHub() function to connect with the database. 
+
+Now, we are ready to explore available data.
+
+
+```r
+ah = AnnotationHub()
+
+ah$species
+```
+
+
+```
+## snapshotDate(): 2020-10-27
+```
+
+```
+##  [1] "Homo sapiens"         "Vicugna pacos"        "Dasypus novemcinctus"
+##  [4] "Otolemur garnettii"   "Papio hamadryas"      "Papio anubis"        
+##  [7] "Felis catus"          "Pan troglodytes"      "Bos taurus"          
+## [10] "Canis familiaris"
+```
+
+At date, AnnotationHub contains data from 2643 species.
+
+---
+Once you find the desired data, you can download it to your session.
+
+
+```r
+hg_genes &lt;- ah[["AH5036"]]
+
+head(hg_genes)
+```
+
+```
+## UCSC track 'knownGene'
+## UCSCData object with 6 ranges and 5 metadata columns:
+##       seqnames      ranges strand |        name     score     itemRgb       thick
+##          &lt;Rle&gt;   &lt;IRanges&gt;  &lt;Rle&gt; | &lt;character&gt; &lt;numeric&gt; &lt;character&gt;   &lt;IRanges&gt;
+##   [1]     chr1 11874-14409      + |  uc001aaa.3         0        &lt;NA&gt; 11874-11873
+##   [2]     chr1 11874-14409      + |  uc010nxr.1         0        &lt;NA&gt; 11874-11873
+##   [3]     chr1 11874-14409      + |  uc010nxq.1         0        &lt;NA&gt; 12190-13639
+##   [4]     chr1 14362-16765      - |  uc009vis.3         0        &lt;NA&gt; 14362-14361
+##   [5]     chr1 16858-17751      - |  uc009vjc.1         0        &lt;NA&gt; 16858-16857
+##   [6]     chr1 15796-18061      - |  uc009vjd.2         0        &lt;NA&gt; 15796-15795
+##                            blocks
+##                     &lt;IRangesList&gt;
+##   [1]     1-354,740-848,1348-2536
+##   [2]     1-354,773-824,1348-2536
+##   [3]     1-354,722-848,1530-2536
+##   [4] 1-468,609-677,1435-1581,...
+##   [5]               1-198,376-894
+##   [6] 1-152,812-970,1063-1260,...
+##   -------
+##   seqinfo: 93 sequences (1 circular) from hg19 genome
+```
+
+Note that the results is a GRanges object
+
+---
+# Annotation packages for specific organisms
+
+
+```r
+x &lt;- org.Hs.eg.db
+AnnotationDbi::select(x,
+                      keys = "ATRX chromatin remodeler",
+                      keytype = "GENENAME",
+                      columns = c("ENTREZID", "ALIAS", "UNIPROT")
+                      )
+```
+
+.center[
+
+```
+##                    GENENAME ENTREZID  ALIAS UNIPROT
+## 1  ATRX chromatin remodeler      546    JMS  A4LAA3
+## 2  ATRX chromatin remodeler      546    JMS  B4DLW1
+## 3  ATRX chromatin remodeler      546    JMS  P46100
+## 4  ATRX chromatin remodeler      546  MRX52  A4LAA3
+## 5  ATRX chromatin remodeler      546  MRX52  B4DLW1
+## 6  ATRX chromatin remodeler      546  MRX52  P46100
+## 7  ATRX chromatin remodeler      546  RAD54  A4LAA3
+## 8  ATRX chromatin remodeler      546  RAD54  B4DLW1
+## 9  ATRX chromatin remodeler      546  RAD54  P46100
+## 10 ATRX chromatin remodeler      546 RAD54L  A4LAA3
+## 11 ATRX chromatin remodeler      546 RAD54L  B4DLW1
+## 12 ATRX chromatin remodeler      546 RAD54L  P46100
+## 13 ATRX chromatin remodeler      546    XH2  A4LAA3
+## 14 ATRX chromatin remodeler      546    XH2  B4DLW1
+## 15 ATRX chromatin remodeler      546    XH2  P46100
+```
+]
+
+
+---
+# You can submit your own packages!
+
+.center[
+&lt;img src = "images/cdsb.png" style="width:400px; " /&gt;
+&lt;img src = "images/regutoolsteam.png" style="width:500px; " /&gt;
+
+]
+
+--
+&lt;img src = "images/regutools1.png" style="width:180px; position:absolute; top:400px; left:140px; " /&gt;
+
+--
+
+&lt;img src = "images/regutools2.png" style="width:410px; position:absolute; top:405px; left:350px; " /&gt;
+
+.center[
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+http://www.bioconductor.org/packages/regutools 
+]
+
+---
+# How regutools works?
+
+First we need to connect with the database by creating a *regulondb* object:
+
+
+
+
+```r
+regulondb_conn &lt;- connect_database()
+
+e_coli_regulondb &lt;-
+    regulondb(
+        database_conn = regulondb_conn,
+        organism = "E.coli",
+        database_version = "1",
+        genome_version = "1"
+    )
+```
+
+---
+# Integration of regutools with the Bioconductor Ecosystem
+
+The function **convert_to_granges()** converts a **regulondb_result** object into a **GRanges** object whenever possible to facilitate the integration with other Bioconductor workflows.
+
+.pull-left[ 
+
+```r
+res &lt;- get_dataset(
+  regulondb = e_coli_regulondb,
+  dataset = "GENE",
+  attributes = c("posleft", "posright", "strand", "name"),
+  filters = list("name" = c("araC","crp","lacI"))
+)
+```
+]
+
+.pull-right[
+
+```r
+convert_to_granges(res)
+```
+
+```
+## GRanges object with 3 ranges and 1 metadata column:
+##       seqnames          ranges strand |        name
+##          &lt;Rle&gt;       &lt;IRanges&gt;  &lt;Rle&gt; | &lt;character&gt;
+##   [1]   E.coli     70387-71265      + |        araC
+##   [2]   E.coli 3486120-3486752      + |         crp
+##   [3]   E.coli   366428-367510      - |        lacI
+##   -------
+##   seqinfo: 1 sequence from an unspecified genome; no seqlengths
+```
+]
+
+---
+Integrating your package results with the Bioconductor Ecosystem facilitates
+the use of other packages in downstream steps, for example for plotting.
+
+
+```r
+grange &lt;- GenomicRanges::GRanges("chr",IRanges::IRanges(5000, 10000))
+
+plot_dna_objects(
+    regulondb = e_coli_regulondb,
+    grange = grange,
+    elements = c("gene", "promoter")
+)
+```
+
+.center[
+![](intro-bioconductor_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
+]
+
+---
+# The Bioconductor community is and infinite source of knowledge
+
+.pull-left[
+### Support page of Bioconductor
+https://support.bioconductor.org
+
+&lt;img src = "images/support.png" style="width:380px; position:absolute; top:370px; left:50px; " /&gt;
+]
+
+--
+
+.pull-right[
+### Slack channel
+&lt;img src = "images/slack.png" style="width:160px; position:absolute; top:190px; left:650px; " /&gt;
+
+https://bioc-community.herokuapp.com 
+
+&lt;img src = "images/slack2.png" style="width:380px; position:absolute; top:370px; left:450px; " /&gt;
+]
+
+---
+# Share your contributions with the community!
+
+.pull-left[
+&lt;img src = "images/bioc2019logo.png" style="width:100px; position:absolute; top:210px; left:80px; " /&gt;
+&lt;img src = "images/bioc2019text.png" style="width:220px; position:absolute; top:220px; left:190px; " /&gt;
+&lt;img src = "images/bioc2019ppt.png" style="width:320px; position:absolute; top:380px; left:80px; " /&gt;
+]
+
+.pull-right[ 
+&lt;img src = "images/bioc2019.png" style="width:290px; position:absolute; top:190px; left:480px; " /&gt;
+]
+
+--
+
+.pull-right[   
+&lt;img src = "images/bioc2021.png" style="width:290px; position:absolute; top:420px; left:480px; " /&gt;
+
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+https://bioc2021.bioconductor.org
+]
+
+---
+class: inverse middle center
+
+background-image: url("images/joss.png"), url("images/rladies-bmore.png")
+background-size: 140px, 140px
+background-position: 90% 90%, 5% 5%
+
+# Thanks for your attention!
+
+### Twitter: @josschavezf1
+
+### josschavezf.netlify.app
+
+---
+class: inverse middle center
+
+# These slides were made using the [xaringan](https://github.com/yihui/xaringan) package from Yihui Xie and the [rladies theme](https://alison.rbind.io/post/2017-12-18-r-ladies-presentation-ninja/) from Alison Hill.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create();
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
