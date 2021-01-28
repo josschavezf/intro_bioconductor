@@ -36,7 +36,8 @@ hg_genes <- hg[["AH5036"]]
 ################################################################################
 
 # There are some packages that give us access to databases from a specific
-# organism, such as the Human genome.
+# organism, such as **org.Hs.eg.db** that maps Gene identifiers to GenBank
+# Accession Numbers for the Human genome.
 
 #  Load the libraries
 library(AnnotationDbi)

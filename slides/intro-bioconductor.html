@@ -38,7 +38,6 @@ background-position: 90% 90%, 5% 5%
 
 ## http://github.com/josschavezf/intro_bioconductor
 
-&lt;br&gt; 
 
 # Or you can download them by running the following code in your R session: 
 ]
@@ -52,28 +51,64 @@ usethis::use_course("josschavezf/intro_bioconductor")
 ```
 
 ---
-# What is Bioconductor?
+class: middle center
 
-* A repository for the analysis of genomic data. 
+# Slides are available at
 
-* At date, contains 1974 software packages.
-
---
-# Where is located? 
-
-https://www.bioconductor.org
-
-&lt;img src = "images/bioconductor.png" style="width:450px; position:absolute; top:300px; left:380px; " /&gt;
+## https://josschavezf.github.io/slides_rladies_bmore/intro-bioconductor.html
 
 ---
-# What kind of packages can we find in Bioconductor?
+# What is Bioconductor?
 
-In Bioconductor exist four types of packages:
+A repository for the analysis of genomic data. 
 
-* Software
+.center[ 
+&lt;img src = "images/sequencing.png" style="width:800px; " /&gt;
+
+At date, contains **1974** software packages.
+]
+
+---
+## Bioconductor have diferent types of packages:
+
+&lt;img src = "images/bioconductorlogo.jpg" style="width:400px; position:absolute; top:500px; left:280px; " /&gt;
+
+.pull-left[
+* Software (functions)
+  - Read sequence files
+  - Count
+  - Normalize
+  - Find differences
+  - Plot
+
 * Annotation
+  - Databases
+  - Organism Sequences
+  - Gene identity
+]
+
+--
+
+.pull-right[
 * Experiment
+  - Sequences from a biological experiment.
+  - Functions to analyze the data.
+  - Lead to a result with biological relevance.
+
 * Workflow
+  - Implementation of multiple Bioconductor packages.
+  - Show the steps to perform an analysis.
+
+]
+
+---
+# How do we access to Bioconductor?
+
+.center[
+### https://www.bioconductor.org
+
+&lt;img src = "images/bioconductor.png" style="width:550px;" /&gt;
+]
 
 ---
 # How do we access to Bioconductor?
@@ -92,7 +127,7 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 
 **BiocManager** help us to:
 
-* Install any desire package from Bioconductor, for example the package **Biostrings**:
+* Install any package from Bioconductor, for example the package **Biostrings**:
 
 
 ```r
@@ -114,7 +149,7 @@ Note: Bioconductor is updated twice a year, around April and October.
 ---
 # The Bioconductor Environment
 
-In Bioconductor, there are some kind of data, such as sequences and alignments that will be treated in a different way that we use to do with lists or data frames.
+There are some kind of data, such as sequences and alignments that need be treated in a different way that we use to do with lists or data frames.
 
 Let's see some packages that will help us to deal with genomics data.
 
@@ -122,7 +157,8 @@ Let's see some packages that will help us to deal with genomics data.
 * GenomicRanges
 * AnnotationHub
 * Gviz
-* SummarizedExperiment
+
+&lt;img src = "images/bioconductorlogo.jpg" style="width:400px; position:absolute; top:500px; left:430px; " /&gt;
 
 ---
 # Manipulation of genomic sequences
@@ -147,7 +183,7 @@ eco &lt;- readDNAStringSet("../data/eco.fasta")
 ```
 
 ---
-We can get some attributes of the data, as well as subset sequences of interest.
+We can get some attributes of the data, as well as subset some sequences of interest.
 
 
 * Get the number of sequences
@@ -213,7 +249,7 @@ subseq(eco,start = 1, end = 10)
 ## [5]    10 GTGAAAAAGA                                                   eco-b0005
 ```
 --
-* Translate sequences to amin acids
+* Translate sequences to amino acids
 
 ```r
 translate(eco$`eco-b0001`)
@@ -225,11 +261,140 @@ translate(eco$`eco-b0001`)
 ```
 
 ---
-# We can store more information from each sequence, such as genomic position and chromosome.
+## We can store more information from each sequence, (eg.genomic position and chromosome).
 
-We need to use a **GRanges** object.
+.center[
+&lt;img src = "images/genesABC.png" style="width:600px; " /&gt;
+]
+
+---
+We need to use a **GenomicRanges** object.
 
 
+```r
+library(GenomicRanges)
+GRanges(seqnames = c("geneA", "geneB", "geneC"),
+        ranges = IRanges(start = c(10, 20, 32),
+                         end = c(15,27,42) ),
+        strand = c("+", "+", "-") )
+```
+
+```
+## GRanges object with 3 ranges and 0 metadata columns:
+##       seqnames    ranges strand
+##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt;
+##   [1]    geneA     10-15      +
+##   [2]    geneB     20-27      +
+##   [3]    geneC     32-42      -
+##   -------
+##   seqinfo: 3 sequences from an unspecified genome; no seqlengths
+```
+
+.center[
+&lt;img src = "images/genesABC.png" style="width:400px; " /&gt;
+]
+
+--
+* Note that we are using a special way to define the genomic position (IRanges)
+
+---
+# We can add more information by using Rle objects and metadata columns
+
+
+```r
+GRanges(seqnames = Rle(c("chr2", "chr2", "chr1", "chr3"), 
+                       c(1, 1, 2, 1)),
+        ranges = IRanges(1:5, width=10:14,
+                         names=head(letters, 5)),
+        strand = Rle(strand(c("-", "+", "*")), c( 1,3, 1)),
+        score=1:5, GC=seq(1, 0, length=5) )
+```
+
+```
+## GRanges object with 5 ranges and 2 metadata columns:
+##     seqnames    ranges strand |     score        GC
+##        &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt; | &lt;integer&gt; &lt;numeric&gt;
+##   a     chr2      1-10      - |         1      1.00
+##   b     chr2      2-12      + |         2      0.75
+##   c     chr1      3-14      + |         3      0.50
+##   d     chr1      4-16      + |         4      0.25
+##   e     chr3      5-18      * |         5      0.00
+##   -------
+##   seqinfo: 3 sequences from an unspecified genome; no seqlengths
+```
+
+---
+# Genomic regions with biological relevance
+
+.center[
+&lt;img src = "images/splicing.png" style="width:600px; " /&gt;
+]
+--
+
+```
+## GRanges object with 2 ranges and 1 metadata column:
+##       seqnames    ranges strand |   exon_id
+##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt;
+##   [1]    geneM     10-15      + |         1
+##   [2]    geneM     32-42      + |         2
+##   -------
+##   seqinfo: 1 sequence from an unspecified genome; no seqlengths
+```
+---
+
+
+```
+## GRanges object with 2 ranges and 1 metadata column:
+##       seqnames    ranges strand |   exon_id
+##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt;
+##   [1]    geneM     10-15      + |         1
+##   [2]    geneM     32-42      + |         2
+##   -------
+##   seqinfo: 1 sequence from an unspecified genome; no seqlengths
+```
+
+**range** retrieves the pre-processed gene range (with introns and exons)
+
+```r
+range(gr)
+```
+
+```
+## GRanges object with 1 range and 0 metadata columns:
+##       seqnames    ranges strand
+##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt;
+##   [1]    geneM     10-42      +
+##   -------
+##   seqinfo: 1 sequence from an unspecified genome; no seqlengths
+```
+
+---
+# Genomic regions with biological relevance
+
+.center[
+&lt;img src = "images/promoter.png" style="width:600px; " /&gt;
+]
+
+**flank()** retrieves the upstream regulatory region
+
+```r
+gr &lt;- GRanges(seqnames = "geneO",
+              ranges = IRanges(start = c(120, 180),
+                               end = c(150,240) ),
+              strand = "+",
+              exon_id = c(1,2) )
+flank(gr, 100)
+```
+
+```
+## GRanges object with 2 ranges and 1 metadata column:
+##       seqnames    ranges strand |   exon_id
+##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt; | &lt;numeric&gt;
+##   [1]    geneO    20-119      + |         1
+##   [2]    geneO    80-179      + |         2
+##   -------
+##   seqinfo: 1 sequence from an unspecified genome; no seqlengths
+```
 
 ---
 class: middle center
@@ -310,14 +475,15 @@ Note that the results is a GRanges object
 ---
 # Annotation packages for specific organisms
 
+**org.Hs.eg.db** Maps Gene identifiers to GenBank Accession Numbers for the Human genome
 
 ```r
 x &lt;- org.Hs.eg.db
 AnnotationDbi::select(x,
                       keys = "ATRX chromatin remodeler",
                       keytype = "GENENAME",
-                      columns = c("ENTREZID", "ALIAS", "UNIPROT")
-                      )
+                      columns = c("ENTREZID", 
+                                  "ALIAS", "UNIPROT") )
 ```
 
 .center[
@@ -334,14 +500,18 @@ AnnotationDbi::select(x,
 ## 8  ATRX chromatin remodeler      546  RAD54  B4DLW1
 ## 9  ATRX chromatin remodeler      546  RAD54  P46100
 ## 10 ATRX chromatin remodeler      546 RAD54L  A4LAA3
-## 11 ATRX chromatin remodeler      546 RAD54L  B4DLW1
-## 12 ATRX chromatin remodeler      546 RAD54L  P46100
-## 13 ATRX chromatin remodeler      546    XH2  A4LAA3
-## 14 ATRX chromatin remodeler      546    XH2  B4DLW1
-## 15 ATRX chromatin remodeler      546    XH2  P46100
 ```
 ]
 
+---
+# Plotting biological data
+
+The package **Gviz** have functions to make representations of a variety of genomic annotation features, using data from public resources (e.g. ENSEMBL or UCSC) or in-house curated data.
+
+Pros of using Gviz: plotting flexibility.
+.center[
+![](intro-bioconductor_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
+]
 
 ---
 # You can submit your own packages!
@@ -349,7 +519,7 @@ AnnotationDbi::select(x,
 .center[
 &lt;img src = "images/cdsb.png" style="width:400px; " /&gt;
 &lt;img src = "images/regutoolsteam.png" style="width:500px; " /&gt;
-
+http://comunidadbioinfo.github.io
 ]
 
 --
@@ -389,7 +559,6 @@ e_coli_regulondb &lt;-
 
 The function **convert_to_granges()** converts a **regulondb_result** object into a **GRanges** object whenever possible to facilitate the integration with other Bioconductor workflows.
 
-.pull-left[ 
 
 ```r
 res &lt;- get_dataset(
@@ -398,12 +567,6 @@ res &lt;- get_dataset(
   attributes = c("posleft", "posright", "strand", "name"),
   filters = list("name" = c("araC","crp","lacI"))
 )
-```
-]
-
-.pull-right[
-
-```r
 convert_to_granges(res)
 ```
 
@@ -417,7 +580,7 @@ convert_to_granges(res)
 ##   -------
 ##   seqinfo: 1 sequence from an unspecified genome; no seqlengths
 ```
-]
+
 
 ---
 Integrating your package results with the Bioconductor Ecosystem facilitates
@@ -435,8 +598,24 @@ plot_dna_objects(
 ```
 
 .center[
-![](intro-bioconductor_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
+![](intro-bioconductor_files/figure-html/unnamed-chunk-28-1.png)&lt;!-- --&gt;
 ]
+
+---
+class: center
+
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+# How do we get help?
+
+--
+## browseVignettes() is a good start
+
+browseVignettes("Biostrings")
+
+--
+
+# But...
 
 ---
 # The Bioconductor community is and infinite source of knowledge
@@ -477,7 +656,7 @@ https://bioc-community.herokuapp.com
 .pull-right[   
 &lt;img src = "images/bioc2021.png" style="width:290px; position:absolute; top:420px; left:480px; " /&gt;
 
-&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
 https://bioc2021.bioconductor.org
 ]
 
