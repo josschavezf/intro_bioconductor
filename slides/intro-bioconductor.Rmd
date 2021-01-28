@@ -139,7 +139,7 @@ Note: Bioconductor is updated twice a year, around April and October.
 ---
 # The Bioconductor Environment
 
-There are some kind of data, such as sequences and alignments that need be treated in a different way that we use to do with lists or data frames.
+There are some kind of data, such as sequences and alignments that need to be treated in a different way that we use to do with lists or data frames.
 
 Let's see some packages that will help us to deal with genomics data.
 
@@ -199,7 +199,7 @@ translate(eco$`eco-b0001`)
 ```
 
 ---
-## We can store more information from each sequence, (eg.genomic position and chromosome).
+## We can store more information from each sequence, (eg. genomic position and chromosome).
 
 .center[
 <img src = "images/genesABC.png" style="width:600px; " />
@@ -217,7 +217,7 @@ GRanges(seqnames = c("geneA", "geneB", "geneC"),
 ```
 
 .center[
-<img src = "images/genesABC.png" style="width:400px; " />
+<img src = "images/genesABC.png" style="width:450px; " />
 ]
 
 --
@@ -284,8 +284,9 @@ flank(gr, 100)
 ```
 
 ---
-class: middle center
+class: center
 
+<br><br>
 # Where can we find genomic data?
 
 --
@@ -299,9 +300,9 @@ class: middle center
 
 **AnnotationHub** connect with multiple genomic data providers and give us access to their data.
 
-We use AnnotationHub() function to connect with the database. 
+First use AnnotationHub() function to connect with the database. 
 
-Now, we are ready to explore available data.
+Then, we are ready to explore available data.
 
 ```{r, eval = FALSE}
 ah = AnnotationHub()
@@ -388,7 +389,7 @@ plotTracks(list(itrack, gtrack, atrack, grtrack))
 .center[
 <img src = "images/cdsb.png" style="width:400px; " />
 <img src = "images/regutoolsteam.png" style="width:500px; " />
-http://comunidadbioinfo.github.io
+
 ]
 
 --
@@ -406,7 +407,7 @@ http://www.bioconductor.org/packages/regutools
 ---
 # How regutools works?
 
-First we need to connect with the database by creating a *regulondb* object:
+First we need to connect with the database and create a *regulondb* object:
 
 ```{r, echo=FALSE, message=FALSE}
 library(regutools)
@@ -442,7 +443,7 @@ convert_to_granges(res)
 
 ---
 Integrating your package results with the Bioconductor Ecosystem facilitates
-the use of other packages in downstream steps, for example for plotting.
+the use of other packages in downstream steps (e.g. plotting).
 
 ```{r, eval = FALSE }
 grange <- GenomicRanges::GRanges("chr",IRanges::IRanges(5000, 10000))
@@ -479,7 +480,7 @@ class: center
 
 <br><br><br><br>
 
-# How do we get help?
+# Where can we find some help?
 
 --
 ## browseVignettes() is a good start
@@ -491,7 +492,7 @@ browseVignettes("Biostrings")
 # But...
 
 ---
-# The Bioconductor community is and infinite source of knowledge
+# The Bioconductor community is an infinite source of knowledge
 
 .pull-left[
 ### Support page of Bioconductor
